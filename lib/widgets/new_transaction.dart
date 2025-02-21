@@ -41,7 +41,7 @@ class _NewTransactionState extends State<NewTransaction> {
     final newTransaction = Transaction(
       title: title,
       amount: double.parse(amount),
-      dateTime: dateTime,
+      dateTime: dateTime, categoryId: '',
     );
     widget.onTransactionCreated(newTransaction);
     Navigator.pop(context);
