@@ -12,11 +12,36 @@ class PersonalFinance extends StatefulWidget {
 
 class _PersonalFinanceState extends State<PersonalFinance> {
   List<Transaction> transactions = [
-    Transaction(title: 'Coffee', amount: 150, dateTime: DateTime.now(), categoryId: 'food_and_drinks'),
-    Transaction(title: 'Groceries', amount: 500, dateTime: DateTime.now(), categoryId: 'food_and_drinks'),
-    Transaction(title: 'Cinema', amount: 600, dateTime: DateTime.now(), categoryId: 'entertainment'),
-    Transaction(title: 'Bus fare', amount: 20, dateTime: DateTime.now(), categoryId: ''),
-    Transaction(title: 'Water bill', amount: 300, dateTime: DateTime.now(), categoryId: ''),
+    Transaction(
+      title: 'Coffee',
+      amount: 150,
+      dateTime: DateTime.now(),
+      categoryId: 'food_and_drinks',
+    ),
+    Transaction(
+      title: 'Groceries',
+      amount: 500,
+      dateTime: DateTime.now(),
+      categoryId: 'food_and_drinks',
+    ),
+    Transaction(
+      title: 'Cinema',
+      amount: 600,
+      dateTime: DateTime.now(),
+      categoryId: 'entertainment',
+    ),
+    Transaction(
+      title: 'Water bill',
+      amount: 300,
+      dateTime: DateTime.now(),
+      categoryId: 'home',
+    ),
+    Transaction(
+      title: 'Bus fare',
+      amount: 20,
+      dateTime: DateTime.now(),
+      categoryId: 'transport',
+    ),
   ];
 
   void addTransaction(Transaction newTransaction) {

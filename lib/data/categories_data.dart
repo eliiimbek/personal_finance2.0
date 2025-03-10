@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:personal_finance/models/transaction_category.dart';
 
 final categories = [
