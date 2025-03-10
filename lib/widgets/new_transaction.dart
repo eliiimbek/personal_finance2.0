@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:personal_finance/data/categories_data.dart';
 import 'package:personal_finance/helpers/format_datetime.dart';
 import 'package:personal_finance/models/transaction.dart';
 
@@ -15,9 +16,17 @@ class _NewTransactionState extends State<NewTransaction> {
   var amount = '';
   var selectedDate = DateTime.now();
   var selectedTimeOfDay = TimeOfDay.now();
+  String? selectedCategory;
 
   final dateController = TextEditingController();
   final timeController = TextEditingController();
+
+  @override
+  void dispose() {
+    dateController.dispose();
+    timeController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -41,10 +50,20 @@ class _NewTransactionState extends State<NewTransaction> {
     final newTransaction = Transaction(
       title: title,
       amount: double.parse(amount),
-      dateTime: dateTime, categoryId: '',
+      dateTime: dateTime,
+      categoryId: selectedCategory!,
     );
     widget.onTransactionCreated(newTransaction);
     Navigator.pop(context);
+    if (isTransactionInvalid()) {
+      return;
+    }
+  }
+
+  bool isTransactionInvalid() {
+    final parsedAmount = double.tryParse(amount);
+    final amountIsInvalid = parsedAmount == null || parsedAmount <= 0;
+    return title.trim().isEmpty || amountIsInvalid || selectedCategory == null;
   }
 
   void onDateTap() async {
@@ -83,76 +102,95 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    print('title: $title, amount: $amount');
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  onTap: onDateTap,
-                  readOnly: true,
-                  controller: dateController,
-                  decoration: InputDecoration(label: Text('Date')),
-                ),
-              ),
-              SizedBox(width: 16),
-              SizedBox(
-                width: 100,
-                child: TextField(
-                  onTap: onTimeTap,
-                  readOnly: true,
-                  controller: timeController,
-                  decoration: InputDecoration(label: Text('Time')),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  onChanged: (value) => setState(() => title = value),
-                  decoration: InputDecoration(
-                    label: Text('Title'),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomInset + 16),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    onTap: onDateTap,
+                    readOnly: true,
+                    controller: dateController,
+                    decoration: InputDecoration(label: Text('Date')),
                   ),
                 ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: TextField(
-                  onChanged: (value) => setState(() => amount = value),
-                  decoration: InputDecoration(
-                    label: Text('Amount'),
+                SizedBox(width: 16),
+                SizedBox(
+                  width: 100,
+                  child: TextField(
+                    onTap: onTimeTap,
+                    readOnly: true,
+                    controller: timeController,
+                    decoration: InputDecoration(label: Text('Time')),
                   ),
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: TextButton(
-                  onPressed: onCanceled,
-                  child: Text('Cancel'),
+              ],
+            ),
+            SizedBox(height: 16),
+            DropdownMenu(
+              expandedInsets: EdgeInsets.zero,
+              label: Text('Category'),
+              inputDecorationTheme: theme.inputDecorationTheme,
+              onSelected: (value) => setState(() => selectedCategory = value),
+              dropdownMenuEntries:
+                  categories
+                      .map(
+                        (category) => DropdownMenuEntry(
+                          value: category.id,
+                          leadingIcon: Icon(category.icon),
+                          label: category.title,
+                        ),
+                      )
+                      .toList(),
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    onChanged: (value) => setState(() => title = value),
+                    decoration: InputDecoration(label: Text('Title')),
+                  ),
                 ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: onSaved,
-                  child: Text('Save'),
+                SizedBox(width: 16),
+                Expanded(
+                  child: TextField(
+                    onChanged: (value) => setState(() => amount = value),
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: InputDecoration(label: Text('Amount')),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+            SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: onCanceled,
+                    child: Text('Cancel'),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: isTransactionInvalid() ? null : onSaved,
+                    child: Text('Save'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

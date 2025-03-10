@@ -52,10 +52,10 @@ class _PersonalFinanceState extends State<PersonalFinance> {
 
   void openAddTransactionSheet() {
     showModalBottomSheet(
+      useSafeArea: true,
+      isScrollControlled: true,
       context: context,
-      builder: (ctx) => NewTransaction(
-        onTransactionCreated: addTransaction,
-      ),
+      builder: (ctx) => NewTransaction(onTransactionCreated: addTransaction),
     );
   }
 
@@ -65,10 +65,7 @@ class _PersonalFinanceState extends State<PersonalFinance> {
       appBar: AppBar(
         title: Text('Transactions'),
         actions: [
-          IconButton(
-            onPressed: openAddTransactionSheet,
-            icon: Icon(Icons.add),
-          ),
+          IconButton(onPressed: openAddTransactionSheet, icon: Icon(Icons.add)),
         ],
       ),
       body: TransactionsScreen(transactions: transactions),
